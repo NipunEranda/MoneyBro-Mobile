@@ -1,5 +1,5 @@
 {
   "name": "MoneyBro",
   "displayName": "MoneyBro",
-  "api": "http://10.0.2.2:8888"
+  "api": "https://moneybro.netlify.app"
 }
