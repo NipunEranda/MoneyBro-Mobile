@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import { Image, Text, View, StyleSheet, SafeAreaView } from 'react-native';
+import { Image, Text, View, StyleSheet, SafeAreaView, BackHandler } from 'react-native';
 import credentials from '../../cred.json';
+import app from '../../app.json';
+import axios from 'axios';
 const logo = require('../assets/img/app.png');
 import {
     GoogleSignin,
@@ -14,13 +16,20 @@ export default class Login extends Component {
         GoogleSignin.configure({
             ClientId: credentials.web.client_id,
         });
+        BackHandler.addEventListener('hardwareBackPress', function() {return true})
+
     }
 
     signIn = async () => {
         try {
             await GoogleSignin.hasPlayServices();
             const userInfo = await GoogleSignin.signIn();
-            alert(JSON.stringify(userInfo.user));
+            const user = { sub: userInfo.user.id, name: userInfo.user.name, email: userInfo.user.email, balance: 0, currency: 'USD' };
+            const response = await axios.post(`${app.api}/.netlify/functions/auth/google`, user);
+            if (response.data) {
+                this.props.navigation.push("Home");
+            }
+
         } catch (error) {
             if (error.code === statusCodes.SIGN_IN_CANCELLED) {
                 // user cancelled the login flow
@@ -44,7 +53,7 @@ export default class Login extends Component {
                         style={{ width: 192, height: 48 }}
                         size={GoogleSigninButton.Size.Wide}
                         color={GoogleSigninButton.Color.Dark}
-                    onPress={this.signIn}
+                        onPress={this.signIn}
                     />
                 </View>
             </SafeAreaView>
