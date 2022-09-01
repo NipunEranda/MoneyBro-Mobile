@@ -16,7 +16,9 @@ export default class Login extends Component {
     componentDidMount = () => {
         GoogleSignin.configure({
             ClientId: credentials.web.client_id,
+            iosClientId: credentials.web.client_id
         });
+        
         BackHandler.addEventListener('hardwareBackPress', function () { return true })
 
     }
